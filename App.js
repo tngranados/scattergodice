@@ -4,6 +4,7 @@ import Dice from './components/Dice'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import TimerCountdown from 'react-native-timer-countdown';
 import { Audio } from 'expo';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default class App extends React.Component {
   tickSound = new Audio.Sound();
@@ -160,6 +161,11 @@ export default class App extends React.Component {
             {this.state.lettersDone}
           </Text>
         </View>
+        <View style={styles.resetButton}>
+          <TouchableOpacity onPress={this.restart}>
+            <MaterialCommunityIcons name="restart" size={32} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -203,6 +209,11 @@ const styles = StyleSheet.create({
   timerCountdownText: {
     fontSize: 22,
     color: colors.light,
+  },
+  resetButton: {
+    position: 'absolute',
+    right: wp('5%'),
+    bottom: wp('5%'),
   },
   lettersDoneView: {
     marginTop: hp('10%'),
