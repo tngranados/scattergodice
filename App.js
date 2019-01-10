@@ -1,23 +1,57 @@
-import React from 'react';
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Picker, Modal } from 'react-native';
-import Dice from './components/Dice'
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import TimerCountdown from 'react-native-timer-countdown';
-import { Audio } from 'expo';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Audio } from 'expo';
+import React from 'react';
+import {
+  Modal,
+  Picker,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import TimerCountdown from 'react-native-timer-countdown';
+import Dice from './components/Dice';
+import { colors, styles } from './styles/styles';
 
 export default class App extends React.Component {
   tickSound = new Audio.Sound();
-  ringSound = new Audio.Sound()
+  ringSound = new Audio.Sound();
   sixty = [...Array(60).keys()];
 
   initialState = {
     currentLetter: ' ‏‏‎ ',
-    lettersLeft: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+    lettersLeft: [
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'H',
+      'I',
+      'J',
+      'K',
+      'L',
+      'M',
+      'N',
+      'O',
+      'P',
+      'Q',
+      'R',
+      'S',
+      'T',
+      'U',
+      'V',
+      'W',
+      'X',
+      'Y',
+      'Z',
+    ],
     lettersDone: [],
     isPickerVisible: false,
     reset: true,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -34,7 +68,7 @@ export default class App extends React.Component {
 
   hidePicker = () => this.setState({ isPickerVisible: false });
 
-  handlePicker = (time) => {
+  handlePicker = time => {
     this.state.timerNanoSeconds = time;
   };
 
@@ -46,7 +80,10 @@ export default class App extends React.Component {
       const random = Math.floor(Math.random() * lettersLeft.length);
       const nextLetter = lettersLeft[random];
 
-      if (this.state.currentLetter !== ' ‏‏‎ ' && this.state.currentLetter !== '-') {
+      if (
+        this.state.currentLetter !== ' ‏‏‎ ' &&
+        this.state.currentLetter !== '-'
+      ) {
         lettersDone.push(this.state.currentLetter);
       }
       lettersLeft.splice(lettersLeft.indexOf(nextLetter), 1);
@@ -62,46 +99,41 @@ export default class App extends React.Component {
         currentLetter: '-',
       });
     }
-
-    if (this.state.currentLetter === '-') {
-      this.restart();
-    }
-  }
+  };
 
   restart = () => {
     this.setState(JSON.parse(JSON.stringify(this.initialState)));
-  }
+  };
 
-  timerView = (time) => {
+  timerView = time => {
     return (
       <View style={[styles.timerCountdownView]}>
         <TimerCountdown
           initialSecondsRemaining={time}
           onTick={secondsRemaining => {
             if (secondsRemaining <= 4 * 1000) {
-              this.tickSound.replayAsync()
+              this.tickSound.replayAsync();
             }
           }}
           onTimeElapsed={() => {
-            this.ringSound.replayAsync()
+            this.ringSound.replayAsync();
           }}
           allowFontScaling={true}
           style={styles.timerCountdownText}
         />
       </View>
-    )
+    );
   };
 
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar barStyle='light-content' />
+        <StatusBar barStyle="light-content" />
         <View style={styles.header}>
           <Text style={styles.titleText}>Scattergodice</Text>
         </View>
         <View style={styles.dice}>
-          <Dice
-            onPress={this.rollDice} />
+          <Dice onPress={this.rollDice} />
         </View>
         <View style={styles.currentLetterView}>
           <Text style={styles.currentLetterText}>
@@ -112,144 +144,90 @@ export default class App extends React.Component {
           {this.state.reset && (
             <View style={[styles.timerCountdownView]}>
               <Text style={styles.timerCountdownText}>
-                {this.state.timerMinutes <= 9 ? '0' + this.state.timerMinutes : this.state.timerMinutes}
+                {this.state.timerMinutes <= 9
+                  ? '0' + this.state.timerMinutes
+                  : this.state.timerMinutes}
                 :
-              {this.state.timerSeconds <= 9 ? '0' + this.state.timerSeconds : this.state.timerSeconds}
+                {this.state.timerSeconds <= 9
+                  ? '0' + this.state.timerSeconds
+                  : this.state.timerSeconds}
               </Text>
             </View>
           )}
-          {!this.state.reset && this.timerView((this.state.timerMinutes * 60 + this.state.timerSeconds) * 1000)}
+          {!this.state.reset &&
+            this.timerView(
+              (this.state.timerMinutes * 60 + this.state.timerSeconds) * 1000
+            )}
         </TouchableOpacity>
         <Modal
           animationType="slide"
           transparent={true}
+          onRequestClose={this.hidePicker}
           visible={this.state.isPickerVisible}
         >
           <View style={styles.modalView}>
             <TouchableOpacity
               onPress={() => {
                 this.hidePicker();
-              }}>
+              }}
+            >
               <Text style={styles.modalText}>Done</Text>
             </TouchableOpacity>
-            <View style={styles.pickersView}>
-              <Picker
-                selectedValue={`${this.state.timerMinutes}`}
-                onValueChange={(itemValue, itemIndex) => this.setState({ timerMinutes: parseInt(itemValue, 10) })}
-                style={styles.pickerMinutes}
-              >
-                {Object.keys(this.sixty).map((key) => {
-                  return (<Picker.Item label={key} value={key} key={key} color={colors.secondary} />)
-                })
-                }
-              </Picker>
-              <Picker
-                selectedValue={`${this.state.timerSeconds}`}
-                onValueChange={(itemValue, itemIndex) => this.setState({ timerSeconds: parseInt(itemValue, 10) })}
-                style={styles.pickerSeconds}
-              >
-                {Object.keys(this.sixty).map((key) => {
-                  return (<Picker.Item label={key} value={key} key={key} color={colors.secondary} />)
-                })
-                }
-              </Picker>
+            <View styles={styles.pickersContainer}>
+              <View style={styles.pickersView}>
+                <Picker
+                  selectedValue={`${this.state.timerMinutes}`}
+                  onValueChange={(itemValue, itemIndex) =>
+                    this.setState({ timerMinutes: parseInt(itemValue, 10) })
+                  }
+                  style={styles.pickerMinutes}
+                >
+                  {Object.keys(this.sixty).map(key => {
+                    return (
+                      <Picker.Item
+                        label={key}
+                        value={key}
+                        key={key}
+                        color={colors.secondary}
+                      />
+                    );
+                  })}
+                </Picker>
+                <Picker
+                  selectedValue={`${this.state.timerSeconds}`}
+                  onValueChange={(itemValue, itemIndex) =>
+                    this.setState({ timerSeconds: parseInt(itemValue, 10) })
+                  }
+                  style={styles.pickerSeconds}
+                >
+                  {Object.keys(this.sixty).map(key => {
+                    return (
+                      <Picker.Item
+                        label={key}
+                        value={key}
+                        key={key}
+                        color={colors.secondary}
+                      />
+                    );
+                  })}
+                </Picker>
+              </View>
             </View>
           </View>
         </Modal>
         <View style={styles.lettersDoneView}>
-          <Text style={styles.lettersDoneText}>
-            {this.state.lettersDone}
-          </Text>
+          <Text style={styles.lettersDoneText}>{this.state.lettersDone}</Text>
         </View>
         <View style={styles.resetButton}>
           <TouchableOpacity onPress={this.restart}>
-            <MaterialCommunityIcons name="restart" size={32} color={colors.primary} />
+            <MaterialCommunityIcons
+              name="restart"
+              size={32}
+              color={colors.primary}
+            />
           </TouchableOpacity>
         </View>
       </View>
     );
   }
 }
-
-const colors = {
-  primary: '#dd7373',
-  secondary: '#3b3561',
-  light: '#d1d1d1',
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.secondary,
-    display: 'flex',
-    alignItems: 'center',
-  },
-  header: {
-    marginTop: hp('10%'),
-  },
-  dice: {
-    marginTop: hp('5%'),
-  },
-  titleText: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  currentLetterView: {
-    paddingTop: hp('2%'),
-  },
-  currentLetterText: {
-    fontSize: 70,
-    fontWeight: 'bold',
-    color: colors.light,
-  },
-  timerCountdownView: {
-    marginTop: hp('5%'),
-  },
-  timerCountdownText: {
-    fontSize: 22,
-    color: colors.light,
-  },
-  resetButton: {
-    position: 'absolute',
-    right: wp('5%'),
-    bottom: wp('5%'),
-  },
-  lettersDoneView: {
-    marginTop: hp('10%'),
-    paddingHorizontal: wp('12%'),
-  },
-  lettersDoneText: {
-    fontSize: 22,
-    textAlign: 'center',
-    letterSpacing: wp('2%'),
-    color: colors.light,
-  },
-  modalView: {
-    marginTop: hp('60%'),
-    marginHorizontal: wp('5%'),
-    height: hp('50%'),
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-  },
-  modalText: {
-    fontSize: 24,
-    textAlign: 'center',
-    color: colors.secondary,
-    paddingTop: 10,
-  },
-  pickersView: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
-  },
-  pickerMinutes: {
-    height: hp('5%'),
-    width: wp('15%'),
-  },
-  pickerSeconds: {
-    height: hp('5%'),
-    width: wp('15%'),
-  }
-});
