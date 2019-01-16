@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -59,34 +59,88 @@ export const styles = StyleSheet.create({
     color: colors.light,
   },
   modalView: {
-    marginTop: hp('60%'),
     marginHorizontal: wp('5%'),
-    height: hp('50%'),
     backgroundColor: colors.primary,
     borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        marginTop: hp('60%'),
+        height: hp('50%'),
+      },
+      android: {
+        marginTop: hp('70%'),
+        height: hp('40%'),
+      },
+    }),
   },
   modalText: {
     fontSize: 24,
     textAlign: 'center',
     color: colors.secondary,
     paddingTop: 10,
+    ...Platform.select({
+      ios: {},
+      android: {},
+    }),
   },
   pickersContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+      },
+      android: {},
+    }),
   },
   pickersView: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
+    ...Platform.select({
+      ios: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        backgroundColor: colors.primary,
+      },
+      android: {
+        marginTop: hp('5%'),
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+      },
+    }),
+  },
+  pickersViewMinutes: {
+    ...Platform.select({
+      ios: {},
+      android: {
+        width: wp('20%'),
+        // justifyContent: 'flex-start',
+      },
+    }),
+  },
+  pickersViewSeconds: {
+    ...Platform.select({
+      ios: {},
+      android: {
+        width: wp('20%'),
+        // justifyContent: 'flex-end',
+      },
+    }),
   },
   pickerMinutes: {
-    height: hp('5%'),
-    width: wp('15%'),
+    ...Platform.select({
+      ios: {
+        height: hp('5%'),
+        width: wp('15%'),
+      },
+      android: {},
+    }),
   },
   pickerSeconds: {
-    height: hp('5%'),
-    width: wp('15%'),
+    ...Platform.select({
+      ios: {
+        height: hp('5%'),
+        width: wp('15%'),
+      },
+      android: {},
+    }),
   },
 });
