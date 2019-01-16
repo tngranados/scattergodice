@@ -2,6 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Audio } from 'expo';
 import React from 'react';
 import {
+  Alert,
   Modal,
   Picker,
   StatusBar,
@@ -16,7 +17,8 @@ import { colors, styles } from './styles/styles';
 export default class App extends React.Component {
   tickSound = new Audio.Sound();
   ringSound = new Audio.Sound();
-  sixty = [...Array(60).keys()];
+  ten = [...Array(11).keys()];
+  twelve = [...Array(12).keys()];
 
   initialState = {
     currentLetter: ' ‏‏‎ ',
@@ -102,7 +104,16 @@ export default class App extends React.Component {
   };
 
   restart = () => {
-    this.setState(JSON.parse(JSON.stringify(this.initialState)));
+    Alert.alert('Restart', 'Are you sure you want to restart?', [
+      { text: 'Cancel', onPress: () => {}, style: 'cancel' },
+      {
+        text: 'Restart',
+        onPress: () => {
+          this.setState(JSON.parse(JSON.stringify(this.initialState)));
+        },
+        style: 'destructive',
+      },
+    ]);
   };
 
   timerView = time => {
@@ -175,42 +186,48 @@ export default class App extends React.Component {
             </TouchableOpacity>
             <View styles={styles.pickersContainer}>
               <View style={styles.pickersView}>
-                <Picker
-                  selectedValue={`${this.state.timerMinutes}`}
-                  onValueChange={(itemValue, itemIndex) =>
-                    this.setState({ timerMinutes: parseInt(itemValue, 10) })
-                  }
-                  style={styles.pickerMinutes}
-                >
-                  {Object.keys(this.sixty).map(key => {
-                    return (
-                      <Picker.Item
-                        label={key}
-                        value={key}
-                        key={key}
-                        color={colors.secondary}
-                      />
-                    );
-                  })}
-                </Picker>
-                <Picker
-                  selectedValue={`${this.state.timerSeconds}`}
-                  onValueChange={(itemValue, itemIndex) =>
-                    this.setState({ timerSeconds: parseInt(itemValue, 10) })
-                  }
-                  style={styles.pickerSeconds}
-                >
-                  {Object.keys(this.sixty).map(key => {
-                    return (
-                      <Picker.Item
-                        label={key}
-                        value={key}
-                        key={key}
-                        color={colors.secondary}
-                      />
-                    );
-                  })}
-                </Picker>
+                <View style={styles.pickersViewMinutes}>
+                  <Picker
+                    selectedValue={`${this.state.timerMinutes}`}
+                    onValueChange={(itemValue, itemIndex) =>
+                      this.setState({ timerMinutes: parseInt(itemValue, 10) })
+                    }
+                    style={styles.pickerMinutes}
+                    prompt="Minutes"
+                  >
+                    {Object.keys(this.ten).map(key => {
+                      return (
+                        <Picker.Item
+                          label={key}
+                          value={key}
+                          key={key}
+                          color={colors.secondary}
+                        />
+                      );
+                    })}
+                  </Picker>
+                </View>
+                <View style={styles.pickersViewSeconds}>
+                  <Picker
+                    selectedValue={`${this.state.timerSeconds}`}
+                    onValueChange={(itemValue, itemIndex) =>
+                      this.setState({ timerSeconds: parseInt(itemValue, 10) })
+                    }
+                    style={styles.pickerSeconds}
+                    prompt="Seconds"
+                  >
+                    {Object.keys(this.twelve).map(key => {
+                      return (
+                        <Picker.Item
+                          label={`${+key * 5}`}
+                          value={`${+key * 5}`}
+                          key={key}
+                          color={colors.secondary}
+                        />
+                      );
+                    })}
+                  </Picker>
+                </View>
               </View>
             </View>
           </View>
