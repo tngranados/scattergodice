@@ -17,8 +17,8 @@ import { colors, styles } from './styles/styles';
 export default class App extends React.Component {
   tickSound = new Audio.Sound();
   ringSound = new Audio.Sound();
-  ten = [...Array(11).keys()];
-  twelve = [...Array(12).keys()];
+  eleven = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  twelve = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
   initialState = {
     currentLetter: ' ‏‏‎ ',
@@ -195,7 +195,7 @@ export default class App extends React.Component {
                     style={styles.pickerMinutes}
                     prompt="Minutes"
                   >
-                    {Object.keys(this.ten).map(key => {
+                    {Object.keys(this.eleven).map(key => {
                       return (
                         <Picker.Item
                           label={key}
